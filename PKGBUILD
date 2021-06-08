@@ -1,5 +1,5 @@
 pkgname=aur
-pkgver=1.0.0_alpha
+pkgver=1.0.0
 pkgrel=1
 epoch=
 pkgdesc="CLI tool which manages packages from the Arch User Repository & other git repos."
