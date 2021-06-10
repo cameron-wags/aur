@@ -8,12 +8,11 @@ gitDirRegex='^.*/(.*).git$'
 pkgDir=''
 
 clean() {
-    test -f $markerFile && rm $markerFile
     if ls | grep pkg.tar.zst > /dev/null ; then
         todelete=`ls *.pkg.tar.zst`
 
         echo -e "Found package files to clean...\n$todelete\n"
-        read -p "Remove? [Y/n] " -n 1 response
+        read -p "Remove? [Y/n] " -n 1 response < /dev/tty
         case "${response:0:1}" in
             n|N )
                 return 1
@@ -27,7 +26,6 @@ clean() {
 
 clone() {
     git clone $1 || exit 1
-    touch $markerFile
 }
 
 check_update() {
@@ -46,7 +44,7 @@ check_update() {
 }
 
 build() {
-    read -p "Build? [Y/n/(e)xit] " -n 1 response
+    read -p "Build? [Y/n/(e)xit] " -n 1 response < /dev/tty
     case "${response:0:1}" in
         e|E )
             exit 0
@@ -55,7 +53,7 @@ build() {
             return 1
         ;;
         y|Y|* )
-            makepkg -s -c -C || return 1
+            makepkg -scCf < /dev/tty || return 1
         ;;
     esac
     return 0
@@ -74,10 +72,11 @@ install() {
         echo 1
     fi
 
-    if sudo pacman -U $pkg ; then
+    if sudo pacman -U $pkg < /dev/tty ; then
+        test -f $markerFile && rm $markerFile
         return 0
     else
-        exit 1 # may want to return in the future but dump the install out for now
+        return 1 # may want to return 1 in the future
     fi
 }
 
@@ -95,7 +94,7 @@ set_pkg_dir() {
 update_workdir() {
     check_update || return 0 # doesn't really matter what this is as long as it returns
     build || return 1
-    install
+    install || return 1
     clean
 }
 
@@ -117,23 +116,27 @@ new_install() {
     # Get the repo dir in $pkgDir
     set_pkg_dir $1
     
+    # Run an update when the target is already installed
     [ -d "$aurDir/$pkgDir" ] && { update_dirname "$pkgDir"; return $?; }
 
     # Clone the repo (ends up in that dir)
     clone $1
     # It's basically update_workdir $pkgDir from here.
     cd "$pkgDir"
+    touch $markerFile
     echo "Working directory '$PWD'"
-    build || return 1
-    install # needs to change if install returns 1
+    build || return 0
+    install || return 0
     clean
 }
 
 stdin_install() {
-    while read -r target; do
-        # todo somehow block here while waiting for new install to return
+    while : ; do
+        read -r target || break
+        echo "Starting $target"
         new_install $target
     done
+    return 0
 }
 
 update_all() {
