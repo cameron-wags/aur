@@ -64,7 +64,12 @@ install() {
     pkg=`ls *.pkg.tar.zst`
     
     if [ $( echo "$pkg" | wc -l ) -gt 1 ]; then
-        read pkg <<< $(echo "$pkg" | smenu -d -m "Found multiple packages, choose install:" -s /N)
+        echo -e "Found multiple packages!\n"
+        PS3="Choose installation: "
+        select selection in $(echo "$pkg"); do
+            pkg="$selection"
+            break
+        done
     elif [ -f "$pkg" ]; then
         echo "Found package '$pkg'"
     else
