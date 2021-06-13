@@ -7,8 +7,7 @@ arch=("any")
 url="https://github.com/cameron-wags/aur"
 license=("MIT")
 depends=("git"
-         "pacman"
-         "smenu-git")
+         "pacman")
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
 md5sums=('61e7c4a4e2ec3f28c94f2e566f97a138')
 
