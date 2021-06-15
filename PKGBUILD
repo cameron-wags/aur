@@ -1,5 +1,5 @@
 pkgname=aur
-pkgver=1.1.1
+pkgver=1.2.0
 pkgrel=1
 epoch=
 pkgdesc="CLI tool which manages packages from the Arch User Repository & other git repos."
@@ -9,7 +9,7 @@ license=("MIT")
 depends=("git"
          "pacman")
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-md5sums=('61e7c4a4e2ec3f28c94f2e566f97a138')
+md5sums=('94a8b8f308b22f2db5445e3e267b9121')
 
 package() {
     cd "$pkgname-$pkgver"
