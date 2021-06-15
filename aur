@@ -30,17 +30,23 @@ clone() {
 
 check_update() {
     # Returns 1 if there's no update
-    gpout=`git pull`
 
-    if [ -f "$markerFile" ]; then
-        echo "Found temp file...continuing"
-    elif [ "$gpout" == "Already up to date." ]; then
-        return 1
-    else
-        echo $gpout
-        touch $markerFile
-    fi
+    # Assuming there's nothing to download if the package is
+    # marked w/pending update might cause problems. I'll wait
+    # for it to happen before addressing that.
+    [ -f "$markerFile" ] && return 0
+
+    gpout=`git pull`
+    [ "$gpout" = "Already up to date." ] && return 1
+
+    echo $gpout
+    touch $markerFile
     return 0
+}
+
+check_dirname() {
+    cd "$1"
+    check_update
 }
 
 build() {
@@ -146,7 +152,14 @@ stdin_install() {
 
 update_all() {
     for dir in $aurDir/*; do
+        check_dirname $dir &
+    done
+
+    wait
+
+    for dir in $aurDir/*; do
         echo "Checking '$(basename $dir)'..."
+        [ -f "$dir/$markerFile" ] || continue
         # Passing the full dir to update_dirname() defeats
         # what it does but that is fine.
         update_dirname $dir
