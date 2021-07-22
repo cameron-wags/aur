@@ -9,7 +9,7 @@ license=("MIT")
 depends=("git"
          "pacman")
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-md5sums=('94a8b8f308b22f2db5445e3e267b9121')
+md5sums=('8fa1afeb5317ac16865f93f7d87d955e')
 
 package() {
     cd "$pkgname-$pkgver"
