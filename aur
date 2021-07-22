@@ -184,7 +184,7 @@ remove_dirname() {
 # arg 1 is '-<command char>'
 case "${1:1:2}" in
     i )
-        if [ "$2" = "-" ]; then
+        if [ "$2" == "-" ]; then
             stdin_install
         else
             new_install $2
