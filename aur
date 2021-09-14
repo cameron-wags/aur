@@ -121,6 +121,22 @@ update_dirname() {
     fi
 }
 
+new_clone() {
+    # arg 1 is the git remote url
+    cd $aurDir
+    # Get the repo dir in $pkgDir
+    set_pkg_dir $1
+    
+    # Exit when the target is already installed
+    [ -d "$aurDir/$pkgDir" ] && { return 0; }
+
+    # Clone the repo (ends up in that dir)
+    clone $1
+    # It's basically update_workdir $pkgDir from here.
+    cd "$pkgDir"
+    touch $markerFile
+}
+
 new_install() {
     # arg 1 is the git remote url
     cd $aurDir
@@ -141,15 +157,6 @@ new_install() {
     clean
 }
 
-stdin_install() {
-    while : ; do
-        read -r target || break
-        echo "Starting $target"
-        new_install $target
-    done
-    return 0
-}
-
 update_all() {
     for dir in $aurDir/*; do
         check_dirname $dir &
@@ -164,6 +171,20 @@ update_all() {
         # what it does but that is fine.
         update_dirname $dir
     done
+}
+
+stdin_install() {
+    while : ; do
+        read -r target || break
+        echo "Starting $target"
+        new_clone $target &
+    done
+
+    wait
+
+    update_all
+
+    return 0
 }
 
 remove_dirname() {
