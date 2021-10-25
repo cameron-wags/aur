@@ -31,11 +31,6 @@ clone() {
 check_update() {
     # Returns 1 if there's no update
 
-    # Assuming there's nothing to download if the package is
-    # marked w/pending update might cause problems. I'll wait
-    # for it to happen before addressing that.
-    [ -f "$markerFile" ] && return 0
-
     gpout=`git pull`
     [ "$gpout" = "Already up to date." ] && return 1
 
