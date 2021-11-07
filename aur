@@ -29,12 +29,12 @@ clone() {
 }
 
 check_update() {
-    [ -f "$markerFile" ] && return 0
-
     gpout=`git pull`
+    [ "$gpout" = "Already up to date." ] || echo $gpout
+
+    [ -f "$markerFile" ] && return 0
     [ "$gpout" = "Already up to date." ] && return 1
 
-    echo $gpout
     touch $markerFile
     return 0
 }
