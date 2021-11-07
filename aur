@@ -29,7 +29,7 @@ clone() {
 }
 
 check_update() {
-    # Returns 1 if there's no update
+    [ -f "$markerFile" ] && return 0
 
     gpout=`git pull`
     [ "$gpout" = "Already up to date." ] && return 1
